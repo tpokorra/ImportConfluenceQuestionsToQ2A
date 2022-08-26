@@ -5,8 +5,10 @@ from q2a_models import *
 from types import SimpleNamespace
 
 def add_user(orig_id, email, username, date_created):
-    user, created = QaUsers.get_or_create(createip = orig_id, defaults={'handle': username, 'email': email, 'created': date_created})
-    if not created:
+    user = QaUsers.get_or_none(handle = username)
+    if not user:
+        user = QaUsers.create(createip = orig_id, handle=username, email=email, created=date_created)
+    else:
         user.email = email
         user.handle = username
         user.save()
