@@ -63,27 +63,45 @@ def quick_test():
     a_id = add_answer(124, u_id, q_id, "Nimm doch einfach Ansible", datetime.now())
 
 
-def pseudo_json_to_json(code):
-    return code.replace("@{", '{"').replace('=', '": "').replace('; ','", "').replace("}", '"}')
+def pseudo_json_to_json(code, attributes):
+    # drop leading @
+    code = code[1:]
+    # replace quotes
+    code = code.replace('"', "&quot;")
+
+    for attribute in attributes:
+        # not first attributes
+        code = code.replace('; ' + attribute + '=', '", "' + attribute + '": "')
+        # first attribute
+        code = code.replace(attribute + '=', '"' + attribute + '": "')
+    # add last quote for value
+    code = code.replace("}", '"}')
+
+    return code
 
 def import_from_json_file(filename):
-    #encoded_text = open(filename, 'rb').read()
-    #bom = codecs.BOM_UTF16_LE
-    #assert encoded_text.startswith(bom)
-    #encoded_text = encoded_text[len(bom):]
-    #content = encoded_text.decode('utf-16le')
 
-    f = open(filename)
-    content = f.read()
-    f.close()
+    if "samples" in filename:
+        f = open(filename)
+        content = f.read()
+        f.close()
+    else:
+        # see https://stackoverflow.com/questions/22459020/python-decode-utf-16-file-with-bom
+        encoded_text = open(filename, 'rb').read()
+        bom = codecs.BOM_UTF16_LE
+        assert encoded_text.startswith(bom)
+        encoded_text = encoded_text[len(bom):]
+        content = encoded_text.decode('utf-16')
 
     data = json.loads(content, object_hook=lambda d: SimpleNamespace(**d))
 
     u_id = add_user(data.author.userKey, data.author.email, data.author.name, datetime.now())
-    q_id = add_question(data.id, u_id, data.title, data.body, datetime.fromtimestamp(data.dateAsked/1000))
+    q_id = add_question(data.id, u_id, data.title, data.body.content, datetime.fromtimestamp(data.dateAsked/1000))
     for answer in data.answers:
-        author = json.loads(pseudo_json_to_json(answer.author), object_hook=lambda d: SimpleNamespace(**d))
-        body = json.loads(pseudo_json_to_json(answer.body), object_hook=lambda d: SimpleNamespace(**d))
+        author_str = pseudo_json_to_json(answer.author, {'name', 'fullName', 'avatarDownloadPath', 'email', 'userKey'})
+        author = json.loads(author_str, object_hook=lambda d: SimpleNamespace(**d))
+        body_str = pseudo_json_to_json(answer.body, {'content', 'bodyFormat'})
+        body = json.loads(body_str, object_hook=lambda d: SimpleNamespace(**d))
         a_u_id = add_user(author.userKey, author.email, author.name, datetime.now())
         a_id = add_answer(answer.id, a_u_id, q_id, body.content, datetime.fromtimestamp(answer.dateAnswered/1000))
         if answer.accepted:
