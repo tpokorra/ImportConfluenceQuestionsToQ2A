@@ -1,0 +1,89 @@
+{
+    "id":  45416525,
+    "title":  "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+    "body":  {
+                 "content":  "\u003cp\u003e\u003cspan class=\"confluence-embedded-file-wrapper confluence-embedded-manual-size\"\u003e\u003cimg class=\"confluence-embedded-image\" height=\"250\" src=\"/download/attachments/45416525/Fehlermeldung%20XYZ.JPG?version=1\u0026amp;modificationDate=1611320223063\u0026amp;api=v2\" data-image-src=\"/download/attachments/45416525/Fehlermeldung%20XYZ.JPG?version=1\u0026amp;modificationDate=1611320223063\u0026amp;api=v2\" data-unresolved-comment-count=\"0\" data-linked-resource-id=\"45416530\" data-linked-resource-version=\"1\" data-linked-resource-type=\"attachment\" data-linked-resource-default-alias=\"Fehlermeldung XYZ.JPG\" data-base-url=\"https://confluence.example.com\" data-linked-resource-content-type=\"image/jpeg\" data-linked-resource-container-id=\"45416525\" data-linked-resource-container-version=\"2\"\u003e\u003c/span\u003e\u003c/p\u003e",
+                 "bodyFormat":  "VIEW"
+             },
+    "author":  {
+                   "name":  "j.doe",
+                   "fullName":  "John Doe",
+                   "email":  "john@example.com",
+                   "userKey":  "2c9f8382537a5fb601537e5a20270002"
+               },
+    "friendlyDateAsked":  "Jan 22, 2021",
+    "dateAsked":  1611320155540,
+    "answers":  [
+                    {
+                        "id":  45416532,
+                        "questionId":  45416525,
+                        "body":  "@{content=\u003col\u003e\u003cli\u003eAt vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\u003e; bodyFormat=VIEW}",
+                        "author":  "@{name=j.doe; fullName=John Doe; email=john@example.com; userKey=2c9f8382537a5fb601537e5a20270002}",
+                        "dateAnswered":  1611321813297,
+                        "friendlyDateAnswered":  "Jan 22, 2021",
+                        "votes":  "@{up=0; down=0; total=0; upVoted=False; downVoted=False}",
+                        "comments":  "",
+                        "metadata":  "   ",
+                        "accepted":  true,
+                        "dateAccepted":  1611327138733,
+                        "idAsString":  "45416532"
+                    },
+                    {
+                        "id":  45416555,
+                        "questionId":  45416525,
+                        "body":  "@{content=\u003cp\u003eLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren.\u003c/p\u003e\u003cp\u003e\u003cbr/\u003e\u003c/p\u003e; bodyFormat=VIEW}",
+                        "author":  "@{name=m.mustermann; fullName=Max Mustermann; email=m.mustermann@example.com; userKey=2c9f838258868eba0158ca4744190004}",
+                        "dateAnswered":  1611824198177,
+                        "friendlyDateAnswered":  "Jan 28, 2021",
+                        "votes":  "@{up=0; down=0; total=0; upVoted=False; downVoted=False}",
+                        "comments":  "",
+                        "metadata":  "    ",
+                        "accepted":  false,
+                        "idAsString":  "45416555"
+                    }
+                ],
+    "answersCount":  2,
+    "topics":  [
+                   {
+                       "id":  31588363,
+                       "idAsString":  "31588363",
+                       "name":  "topic1",
+                       "featured":  true,
+                       "isWatching":  true
+                   },
+                   {
+                       "id":  3440643,
+                       "idAsString":  "3440643",
+                       "name":  "topic2",
+                       "featured":  false,
+                       "isWatching":  false
+                   },
+                   {
+                       "id":  31588403,
+                       "idAsString":  "31588403",
+                       "name":  "topic3",
+                       "featured":  false,
+                       "isWatching":  false
+                   },
+                   {
+                       "id":  45973505,
+                       "idAsString":  "45973505",
+                       "name":  "topic4",
+                       "featured":  false,
+                       "isWatching":  false
+                   }
+               ],
+    "comments":  [
+
+                 ],
+    "acceptedAnswerId":  45416532,
+    "votes":  {
+                  "up":  0,
+                  "down":  0,
+                  "total":  0,
+                  "upVoted":  false,
+                  "downVoted":  false
+              },
+    "isTrashed":  false
+}
+

@@ -1,70 +1,110 @@
-import mysql.connector
 from datetime import datetime
-import config
+import json
+import codecs
+from q2a_models import *
+from types import SimpleNamespace
 
-def add_user(email, username):
-  insert_sql = """INSERT INTO qa_users(email, handle, createip, created) VALUES (%s, %s, %s, %s)"""
-
-  try:
-    cursor = mydb.cursor()
-    cursor.execute(insert_sql, (email, username, '127.0.0.1', datetime.now()))
-    mydb.commit()
-    cursor.close()
-  except mysql.connector.Error as error:
-    print("Failed to insert user {}".format(error))
-
-
-def add_question(userid, title, content):
-  insert_sql = """INSERT INTO qa_posts(type, userid, title, content, created) VALUES (%s, %s, %s, %s, %s)"""
-
-  try:
-    cursor = mydb.cursor()
-    cursor.execute(insert_sql, ('Q', userid, title, content, datetime.now()))
-    q_id = cursor.lastrowid
-    mydb.commit()
-    cursor.close()
-  except mysql.connector.Error as error:
-    print("Failed to insert user {}".format(error))
-  return q_id
-
-def add_answer(userid, question_id, content):
-  insert_sql = """INSERT INTO qa_posts(type, userid, parentid, content, created) VALUES (%s, %s, %s, %s, %s)"""
-  update_sql = """UPDATE qa_posts SET acount = acount + 1 WHERE postid = %s"""
-
-  try:
-    cursor = mydb.cursor()
-    cursor.execute(insert_sql, ('A', userid, question_id, content, datetime.now()))
-    a_id = cursor.lastrowid
-
-    cursor.execute(update_sql, (question_id, ))
-
-    mydb.commit()
-    cursor.close()
-
-  except mysql.connector.Error as error:
-    print("Failed to insert user {}".format(error))
-  return a_id
+def add_user(orig_id, email, username, date_created):
+    user, created = QaUsers.get_or_create(createip = orig_id, defaults={'handle': username, 'email': email, 'created': date_created})
+    if not created:
+        user.email = email
+        user.handle = username
+        user.save()
+    return user.userid
 
 
-mydb = mysql.connector.connect(
-  host=config.DB_HOST,
-  user=config.DB_USER,
-  database=config.DB_NAME,
-  password=config.DB_PASSWD
-)
+def add_question(orig_id, userid, title, content, date_created):
+    question = QaPosts.get_or_none(createip = orig_id)
+    if not question:
+        question = QaPosts.create(createip = orig_id, type='Q', userid = userid, title=title, content=content, created=date_created)
+    else:
+        question.title = title
+        question.content = content
+        question.save()
+    return question.postid
+
+def add_answer(orig_id, userid, question_id, content, date_created):
+    answer, created = QaPosts.get_or_create(createip = orig_id, defaults =
+            {'type': 'A',
+             'userid': userid,
+             'parentid': question_id,
+             'content': content,
+             'created': date_created})
+
+    if not created:
+        answer.content = content
+        answer.save()
+    else:
+        # increase answer count
+        question = QaPosts.get(postid=answer.parentid)
+        question.acount += 1
+        question.save()
+
+    return answer.postid
 
 
-#add_user("test@solidcharity.com", "testuser2")
-q_id = add_question(4, "Wie installiere ich q2a", "Das wäre schon wichtig, denke ich.")
-a_id = add_answer(4, q_id, "Nimm doch einfach Ansible")
-if mydb.is_connected():
-     mydb.close()
+def add_tag(name):
+    word, created = QaWords.get_or_create(word=name, defaults={'tagwordcount': 1, 'tagcount': 1})
+    if created:
+        word.tagwordcount += 1
+        word.tagcount += 1
+        word.save()
+    return word.wordid
+
+
+def link_tag_to_post(q_id, t_id):
+    tw, created = QaTagwords.get_or_create(postid=q_id, wordid=t_id)
+    pt, created = QaPosttags.get_or_create(postid=q_id, wordid=t_id, defaults={'postcreated': datetime.now()})
+
+
+def quick_test():
+    u_id = add_user(1234, "test@solidcharity.com", "testuser2", datetime.now())
+    q_id = add_question(123, u_id, "Wie installiere ich q2a", "Das wäre schon wichtig, denke ich.", datetime.now())
+    a_id = add_answer(124, u_id, q_id, "Nimm doch einfach Ansible", datetime.now())
+
+
+def pseudo_json_to_json(code):
+    return code.replace("@{", '{"').replace('=', '": "').replace('; ','", "').replace("}", '"}')
+
+def import_from_json_file(filename):
+    #encoded_text = open(filename, 'rb').read()
+    #bom = codecs.BOM_UTF16_LE
+    #assert encoded_text.startswith(bom)
+    #encoded_text = encoded_text[len(bom):]
+    #content = encoded_text.decode('utf-16le')
+
+    f = open(filename)
+    content = f.read()
+    f.close()
+
+    data = json.loads(content, object_hook=lambda d: SimpleNamespace(**d))
+
+    u_id = add_user(data.author.userKey, data.author.email, data.author.name, datetime.now())
+    q_id = add_question(data.id, u_id, data.title, data.body, datetime.fromtimestamp(data.dateAsked/1000))
+    for answer in data.answers:
+        author = json.loads(pseudo_json_to_json(answer.author), object_hook=lambda d: SimpleNamespace(**d))
+        body = json.loads(pseudo_json_to_json(answer.body), object_hook=lambda d: SimpleNamespace(**d))
+        a_u_id = add_user(author.userKey, author.email, author.name, datetime.now())
+        a_id = add_answer(answer.id, a_u_id, q_id, body.content, datetime.fromtimestamp(answer.dateAnswered/1000))
+        if answer.accepted:
+            # selected answer
+            question = QaPosts.get(postid=q_id)
+            question.selchildid = a_id
+            question.save()
+    for topic in data.topics:
+        print(topic)
+        t_id = add_tag(topic.name)
+        link_tag_to_post(q_id, t_id)
+
+#quick_test()
+import_from_json_file("samples/sample01.json")
+
 
 
 
 # DONE: add answers
-# TODO parse json files
+# DONE parse json files
+# DONE: use original dates
 # TODO: increase points
 # TODO: add votes
 # TODO: add tags
-# TODO: use original dates
