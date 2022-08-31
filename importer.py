@@ -60,6 +60,8 @@ def link_tag_to_post(q_id, t_id, name):
     tw, created = QaTagwords.get_or_create(postid=q_id, wordid=t_id)
     pt, created = QaPosttags.get_or_create(postid=q_id, wordid=t_id, defaults={'postcreated': datetime.now()})
     post = QaPosts.get(postid=q_id)
+    if post.tags is not None and name in post.tags.split(","):
+        return
     if post.tags is None:
         post.tags = ""
     else:
