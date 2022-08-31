@@ -67,6 +67,15 @@ def link_tag_to_post(q_id, t_id, name):
     post.save()
 
 
+def set_votes(p_id, up, down):
+    if up or down:
+        post = QaPosts.get(postid=p_id)
+        post.upvotes = up
+        post.downvotes = down
+        post.netvotes = up - down
+        post.save()
+
+
 def quick_test():
     u_id = add_user(1234, "test@solidcharity.com", "testuser2", datetime.now())
     q_id = add_question(123, u_id, "Wie installiere ich q2a", "Das wäre schon wichtig, denke ich.", datetime.now())
@@ -107,6 +116,7 @@ def import_from_json_file(filename):
 
     u_id = add_user(data.author.userKey, data.author.email, data.author.name, datetime.now())
     q_id = add_question(data.id, u_id, data.title, data.body.content, datetime.fromtimestamp(data.dateAsked/1000))
+    set_votes(q_id, int(data.votes.up), int(data.votes.down))
     for answer in data.answers:
         author_str = pseudo_json_to_json(answer.author, {'name', 'fullName', 'avatarDownloadPath', 'email', 'userKey'})
         author = json.loads(author_str, object_hook=lambda d: SimpleNamespace(**d))
@@ -114,6 +124,9 @@ def import_from_json_file(filename):
         body = json.loads(body_str, object_hook=lambda d: SimpleNamespace(**d))
         a_u_id = add_user(author.userKey, author.email, author.name, datetime.now())
         a_id = add_answer(answer.id, a_u_id, q_id, body.content, datetime.fromtimestamp(answer.dateAnswered/1000))
+        votes_str = pseudo_json_to_json(answer.votes, {'up', 'down', 'total', 'upVoted', 'downVoted'})
+        votes = json.loads(votes_str, object_hook=lambda d: SimpleNamespace(**d))
+        set_votes(a_id, int(votes.up), int(votes.down))
         if answer.accepted:
             # selected answer
             question = QaPosts.get(postid=q_id)
