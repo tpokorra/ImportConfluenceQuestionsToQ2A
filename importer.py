@@ -94,8 +94,12 @@ def pseudo_json_to_json(code, attributes):
         code = code.replace('; ' + attribute + '=', '", "' + attribute + '": "')
         # first attribute
         code = code.replace(attribute + '=', '"' + attribute + '": "')
+
     # add last quote for value
-    code = code.replace("}", '"}')
+    code = code[:-1] + '"}'
+
+    # replace backslash with double backslash
+    code = code.replace("\\", "\\\\")
 
     return code
 
@@ -120,13 +124,13 @@ def import_from_json_file(filename):
     set_votes(q_id, int(data.votes.up), int(data.votes.down))
     for answer in data.answers:
         author_str = pseudo_json_to_json(answer.author, {'name', 'fullName', 'avatarDownloadPath', 'email', 'userKey'})
-        author = json.loads(author_str, object_hook=lambda d: SimpleNamespace(**d))
+        author = json.loads(author_str, object_hook=lambda d: SimpleNamespace(**d), strict=False)
         body_str = pseudo_json_to_json(answer.body, {'content', 'bodyFormat'})
-        body = json.loads(body_str, object_hook=lambda d: SimpleNamespace(**d))
+        body = json.loads(body_str, object_hook=lambda d: SimpleNamespace(**d), strict=False)
         a_u_id = add_user(author.userKey, author.email, author.name, datetime.now())
         a_id = add_answer(answer.id, a_u_id, q_id, body.content, datetime.fromtimestamp(answer.dateAnswered/1000))
         votes_str = pseudo_json_to_json(answer.votes, {'up', 'down', 'total', 'upVoted', 'downVoted'})
-        votes = json.loads(votes_str, object_hook=lambda d: SimpleNamespace(**d))
+        votes = json.loads(votes_str, object_hook=lambda d: SimpleNamespace(**d), strict=False)
         set_votes(a_id, int(votes.up), int(votes.down))
         if answer.accepted:
             # selected answer
@@ -144,6 +148,7 @@ def import_from_json_file(filename):
 if os.path.isdir('questions'):
     dirs = os.listdir('questions')
     for file in dirs:
+        print(file)
         import_from_json_file('questions/' + file)
 
 # DONE: add answers
