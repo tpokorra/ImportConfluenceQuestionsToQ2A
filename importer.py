@@ -54,9 +54,16 @@ def add_tag(name):
     return word.wordid
 
 
-def link_tag_to_post(q_id, t_id):
+def link_tag_to_post(q_id, t_id, name):
     tw, created = QaTagwords.get_or_create(postid=q_id, wordid=t_id)
     pt, created = QaPosttags.get_or_create(postid=q_id, wordid=t_id, defaults={'postcreated': datetime.now()})
+    post = QaPosts.get(postid=q_id)
+    if post.tags is None:
+        post.tags = ""
+    else:
+        post.tags += ','
+    post.tags+=name
+    post.save()
 
 
 def quick_test():
@@ -114,7 +121,7 @@ def import_from_json_file(filename):
     for topic in data.topics:
         print(topic)
         t_id = add_tag(topic.name)
-        link_tag_to_post(q_id, t_id)
+        link_tag_to_post(q_id, t_id, topic.name)
 
 #quick_test()
 import_from_json_file("samples/sample01.json")
