@@ -17,6 +17,29 @@ $Headers = @{
 $secpasswd = ConvertTo-SecureString $pass -AsPlainText -Force
 $credential = New-Object System.Management.Automation.PSCredential($user, $secpasswd)
 
+function DownloadAttachment {
+    Param (
+        $question_id
+        $path
+    }
+
+Write-Host $path
+    $filename = $path.Substring(0, $path.IndexOf("?"))
+    $filename = $path.Substring($path.LastIndexOf("/") + 1)
+Write-Host $filename
+
+    New-Item -ItemType Directory -Path "${location}\questions\${question_id}" -Force
+    $parameters = @{
+        Uri = "https://${domain}${path}"
+        Method = "GET"
+        Headers = $Headers
+        Credential = $credential
+        OutFile = "${location}\questions\${question_id}\$filename}"
+    }
+
+    Invoke-WebRequest @parameters
+}
+
 function GetQuestion {
     Param (
         $question_id
@@ -27,7 +50,20 @@ function GetQuestion {
 
     $result = Invoke-RestMethod -Method Get -Uri $url -Headers $Headers -Credential $credential
 
-    $result | ConvertTo-Json | Out-File "$location\questions\${question_id}.json"
+    $content = $result | ConvertTo-Json
+    $content | Out-File "$location\questions\${question_id}.json"
+
+    # also download the attachments
+    if ($content -match "/download/attachments/") {
+        $index = $content.IndexOf("/download/attachments/")
+        while ($index -gt 0) {
+            $closingQuote = $content.IndexOf("\\\"", $index)
+            $path = $content.Substring($index, $closingQuote - $index)
+            DownloadAttachment $question_id $path
+
+            $index = $content.IndexOf("/download/attachments/", $closingQuote)
+        }
+    }
 }
 
 function GetQuestions {
@@ -54,6 +90,6 @@ function GetQuestions {
 }
 
 $location = Get-Location
-New-Item -ItemType Directory -Path "${location}\questions"
+New-Item -ItemType Directory -Path "${location}\questions" -Force
 
 GetQuestions
