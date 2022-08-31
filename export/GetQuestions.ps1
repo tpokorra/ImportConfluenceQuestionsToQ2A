@@ -57,7 +57,7 @@ function GetQuestion {
     if ($content -match "/download/attachments/") {
         $index = $content.IndexOf("/download/attachments/")
         while ($index -gt 0) {
-            $closingQuote = $content.IndexOf("\\\"", $index)
+            $closingQuote = $content.IndexOf('\"', $index)
             $path = $content.Substring($index, $closingQuote - $index)
             DownloadAttachment $question_id $path
 
