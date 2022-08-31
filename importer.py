@@ -79,12 +79,6 @@ def set_votes(p_id, up, down):
         post.save()
 
 
-def quick_test():
-    u_id = add_user(1234, "test@solidcharity.com", "testuser2", datetime.now())
-    q_id = add_question(123, u_id, "Wie installiere ich q2a", "Das wäre schon wichtig, denke ich.", datetime.now())
-    a_id = add_answer(124, u_id, q_id, "Nimm doch einfach Ansible", datetime.now())
-
-
 def pseudo_json_to_json(code, attributes):
     # drop leading @
     code = code[1:]
@@ -144,6 +138,13 @@ def import_from_json_file(filename):
         t_id = add_tag(topic.name)
         link_tag_to_post(q_id, t_id, topic.name)
 
+
+def quick_test():
+    u_id = add_user(1234, "test@solidcharity.com", "testuser2", datetime.now())
+    q_id = add_question(123, u_id, "Wie installiere ich q2a", "Das wäre schon wichtig, denke ich.", datetime.now())
+    a_id = add_answer(124, u_id, q_id, "Nimm doch einfach Ansible", datetime.now())
+
+
 #quick_test()
 #import_from_json_file("samples/sample01.json")
 
@@ -153,9 +154,3 @@ if os.path.isdir('questions'):
         print(file)
         import_from_json_file('questions/' + file)
 
-# DONE: add answers
-# DONE parse json files
-# DONE: use original dates
-# DONE: add votes
-# DONE: add tags
-# TODO: increase points
