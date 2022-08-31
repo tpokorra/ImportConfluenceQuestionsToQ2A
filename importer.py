@@ -3,6 +3,7 @@ import json
 import codecs
 from q2a_models import *
 from types import SimpleNamespace
+import os
 
 def add_user(orig_id, email, username, date_created):
     user = QaUsers.get_or_none(handle = username)
@@ -138,14 +139,16 @@ def import_from_json_file(filename):
         link_tag_to_post(q_id, t_id, topic.name)
 
 #quick_test()
-import_from_json_file("samples/sample01.json")
+#import_from_json_file("samples/sample01.json")
 
-
-
+if os.path.isdir('questions'):
+    dirs = os.listdir('questions')
+    for file in dirs:
+        import_from_json_file('questions/' + file)
 
 # DONE: add answers
 # DONE parse json files
 # DONE: use original dates
+# DONE: add votes
+# DONE: add tags
 # TODO: increase points
-# TODO: add votes
-# TODO: add tags
