@@ -18,7 +18,7 @@ def add_user(orig_id, email, username, date_created):
 def add_question(orig_id, userid, title, content, date_created):
     question = QaPosts.get_or_none(createip = orig_id)
     if not question:
-        question = QaPosts.create(createip = orig_id, type='Q', userid = userid, title=title, content=content, created=date_created)
+        question = QaPosts.create(createip = orig_id, type='Q', userid = userid, title=title, format='html', content=content, created=date_created)
     else:
         question.title = title
         question.content = content
@@ -30,6 +30,7 @@ def add_answer(orig_id, userid, question_id, content, date_created):
             {'type': 'A',
              'userid': userid,
              'parentid': question_id,
+             'format': 'html',
              'content': content,
              'created': date_created})
 

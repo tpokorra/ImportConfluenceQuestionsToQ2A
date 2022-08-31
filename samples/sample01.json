@@ -17,7 +17,7 @@
                     {
                         "id":  45416532,
                         "questionId":  45416525,
-                        "body":  "@{content=At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.; bodyFormat=VIEW}",
+                        "body":  "@{content=<p>At <strong>vero</strong> eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>; bodyFormat=VIEW}",
                         "author":  "@{name=j.doe; fullName=John Doe; email=john@example.com; userKey=2c9f8382537a5fb601537e5a20270002}",
                         "dateAnswered":  1611321813297,
                         "friendlyDateAnswered":  "Jan 22, 2021",
