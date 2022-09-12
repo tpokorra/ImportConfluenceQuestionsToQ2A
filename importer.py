@@ -8,10 +8,14 @@ import os
 def add_user(orig_id, email, username, date_created):
     user = QaUsers.get_or_none(handle = username)
     if not user:
-        user = QaUsers.create(createip = orig_id, handle=username, email=email, created=date_created)
+        user = QaUsers.create(createip = orig_id, handle=username, level=10, flags=1, email=email, created=date_created)
     else:
         user.email = email
         user.handle = username
+        # confirm user
+        user.level = 10
+        # email has been validated
+        user.flags = 1
         user.save()
     return user.userid
 
